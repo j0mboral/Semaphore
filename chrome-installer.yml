@@ -1,6 +1,6 @@
 ---
 - name: Install Google Chrome on Windows
-  hosts: windows_server  # Replace with the name of your Windows host or the appropriate host group
+  hosts: windows_servers  # Replace with the name of your Windows host or the appropriate host group
   gather_facts: no
   tasks:
     - name: Check if Chrome is already installed
