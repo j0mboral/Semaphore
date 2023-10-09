@@ -14,7 +14,7 @@
       when: chrome_check.rc == 0
 
     - name: Install Chrome from Download Folder
-      win_command: 'C:\Users\yourusername\Downloads\chrome_installer.exe /silent /install'  # Replace with the correct path to the downloaded installer
+      win_command: 'C:\Users\wonders\Downloads\Sahred\Google_Chrome_v115.exe /silent /install'  # Replace with the correct path to the downloaded installer
       async: 1200
       poll: 0
       register: install_result
