@@ -1,6 +1,6 @@
 ---
 - name: Install Google Chrome on Windows
-  hosts: windows_servers  # Replace with the name of your Windows host or the appropriate host group
+  hosts: windows_server  # Replace with the name of your Windows host or the appropriate host group
   gather_facts: no
   tasks:
     - name: Check if Chrome is already installed
@@ -15,19 +15,9 @@
 
     - name: Install Chrome from Download Folder
       win_command: 'C:\Users\wonders\Downloads\Sahred\Google_Chrome_v115.exe /silent /install'  # Replace with the correct path to the downloaded installer
-      async: 1200
-      poll: 0
       register: install_result
-      ignore_errors: yes
-
-    - name: Wait for Chrome installation to complete
-      async_status:
-        jid: "{{ install_result.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      retries: 300
-      delay: 10
 
     - name: Check Chrome installation result
       debug:
-        var: job_result
+        var: install_result
+
