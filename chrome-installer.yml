@@ -1,0 +1,41 @@
+---
+- name: Install Google Chrome on Windows
+  hosts: windows_server  # Replace with the name of your Windows host or the appropriate host group
+  gather_facts: no
+  tasks:
+    - name: Download Chrome Installer from Git
+      win_shell: |
+        git clone https://github.com/yourusername/chrome-installer-repo.git C:\Windows\Temp\chrome-installer
+      args:
+        executable: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+      environment:
+        GIT_SSL_NO_VERIFY: "1"  # Use this environment variable if you encounter SSL verification issues with Git
+
+    - name: Check if Chrome is already installed
+      win_command: 'Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "Google Chrome*"}'
+      ignore_errors: yes
+      register: chrome_check
+
+    - name: Uninstall Chrome if already installed
+      win_command: 'msiexec /uninstall {{ chrome_check.stdout_lines[0] | regex_replace(".*{(.*?)}.*", "\\1") }} /qn'
+      ignore_errors: yes
+      when: chrome_check.rc == 0
+
+    - name: Install Chrome
+      win_command: 'C:\Windows\Temp\chrome-installer\chrome_installer.exe /silent /install'
+      async: 1200
+      poll: 0
+      register: install_result
+      ignore_errors: yes
+
+    - name: Wait for Chrome installation to complete
+      async_status:
+        jid: "{{ install_result.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 300
+      delay: 10
+
+    - name: Check Chrome installation result
+      debug:
+        var: job_result
