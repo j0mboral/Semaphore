@@ -3,14 +3,6 @@
   hosts: windows_server  # Replace with the name of your Windows host or the appropriate host group
   gather_facts: no
   tasks:
-    - name: Download Chrome Installer from Git
-      win_shell: |
-        git clone https://github.com/yourusername/chrome-installer-repo.git C:\Windows\Temp\chrome-installer
-      args:
-        executable: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
-      environment:
-        GIT_SSL_NO_VERIFY: "1"  # Use this environment variable if you encounter SSL verification issues with Git
-
     - name: Check if Chrome is already installed
       win_command: 'Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "Google Chrome*"}'
       ignore_errors: yes
@@ -21,8 +13,8 @@
       ignore_errors: yes
       when: chrome_check.rc == 0
 
-    - name: Install Chrome
-      win_command: 'C:\Windows\Temp\chrome-installer\chrome_installer.exe /silent /install'
+    - name: Install Chrome from Download Folder
+      win_command: 'C:\Users\yourusername\Downloads\chrome_installer.exe /silent /install'  # Replace with the correct path to the downloaded installer
       async: 1200
       poll: 0
       register: install_result
