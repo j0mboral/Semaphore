@@ -13,11 +13,19 @@
       ignore_errors: yes
       when: chrome_check.rc == 0
 
-    - name: Install Chrome from Download Folder
-      win_command: 'C:\Users\wonders\Downloads\Sahred\Google_Chrome_v115.exe /silent /install'  # Replace with the correct path to the downloaded installer
-      register: install_result
+    - name: Download Chrome Installer
+      win_command: 'Invoke-WebRequest -Uri "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile "C:\Temp\chrome_installer.exe"'
+      ignore_errors: yes
+
+    - name: Install Chrome from Downloaded Installer
+      win_command: 'C:\Temp\chrome_installer.exe /silent /install'
+      ignore_errors: yes
 
     - name: Check Chrome installation result
+      win_command: 'Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "Google Chrome*"}'
+      register: install_result
+
+    - name: Display Chrome installation result
       debug:
-        var: install_result
+        var: install_result.stdout
 
